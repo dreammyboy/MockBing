@@ -1,0 +1,497 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=1.0" />
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>圣诞</title>
+
+<style>
+	* {
+		margin: 0;
+		padding: 0;
+	}		
+	
+	#content {
+		height: 100vh;
+		width: 100%;
+		background-repeat: no-repeat;
+		z-index: 0;
+		background-image: url("images/ManhattanBeach_480x800.jpg");
+		background-size: cover;
+		background-position: center;
+	}
+	
+	.fader {
+		transition: opacity 1s ease-out;
+		opacity: 0;
+	}
+
+	#snow_ctnr {
+		position: absolute;
+		left: 0;
+		top: 0;
+		width: 100%;
+		height: 100%;
+		overflow: hidden;
+	}
+	
+	.snow_dom_slice {
+		position: absolute;
+		left: 0;
+		top: 0;
+		width: 100%;
+		height: 100%;
+	}
+	
+	.snow_fall {
+		transform-origin: 0% 0%;
+		animation-timing-function: linear;
+		animation-iteration-count: infinite;
+	}
+	
+	.snow_01 {
+		animation-delay: 0s;
+		animation-duration: 50s;
+		animation-name: snow_falling_fore;
+		top: -100%;
+	}
+	
+	.snow_02 {
+		animation-delay: 25s;
+		animation-duration: 50s;
+		animation-name: snow_falling_fore;
+		top: -100%;
+	}
+	
+	.snow_03 {
+		animation-delay: 0s;
+		animation-duration: 70s;
+		opacity: .5;
+		animation-name: snow_falling_mid;
+		top: -100%;
+	}
+	
+	.snow_04 {
+		animation-delay: 35s;
+		animation-duration: 70s;
+		opacity: .5;
+		animation-name: snow_falling_mid;
+		top: -100%;
+	}
+	
+	.snow_drifter {
+		width: 100%;
+		height: 100%;
+		background-repeat: repeat;
+		background-image: url("images/snow.png")
+	}
+	
+	.drift_01 {
+		background-position: 10% 20%;
+	}
+	
+	.drift_02 {
+		background-position: 40% 60%;
+	}
+	
+	.drift_03 {
+		background-position: 90% 10%;
+	}
+
+	.drift_04 {
+		background-position: 50% 15%;
+	}
+	
+	.frost_sprite {
+		background-image: url("images/icy_sides.png");
+		position: absolute;
+		height: 100px;
+		background-size: 120%;
+		background-position: center bottom;
+		background-repeat: repeat-x;
+	}
+	
+	#frost_ctnr {
+		position: absolute;
+		left: 0;
+		top: 0;
+		width: 100%;
+		height: 100%;
+		overflow: hidden;
+	}
+	
+	.lights_sprite {
+		background-image: url("images/lights.png");
+		position: absolute;
+		height: 100px;
+		background-size: 120%;
+		background-position: center bottom;
+		background-repeat: repeat-x;
+	}
+	
+	#lights_ctnr {
+		position: absolute;
+		left: 0;
+		top: 0;
+		width: 100%;
+		height: 100%;
+		overflow: hidden;
+	}
+	
+	div.frame_left {
+		top: -100px;
+		left: 0;
+		transform: rotate(90deg);
+		transform-origin: 0 100px;
+		pointer-events: none;
+	}			
+	
+	div.frame_right {
+		top: 100%;
+		left: calc(100% - 100px);
+		transform: rotate(-90deg);
+		transform-origin: 0 0;
+		pointer-events: none;
+	}
+	
+	div.frame_top {
+		top: 0;
+		left: 0;
+		transform: rotate(180deg);
+		pointer-events: none;
+	}
+	
+	div.frame_bottom {
+		bottom: 0;
+		left: 0;
+		pointer-events: none;
+	}
+	
+	@media all and (orientation:portrait) { 
+		.frame_left, .frame_right, .frame_top, .frame_bottom {
+			width:100vh;
+		}
+	}
+	
+	@media all and (orientation:landscape) { 
+		.frame_left, .frame_right, .frame_top, .frame_bottom {
+			width:100vw;
+		}
+	}
+	
+	@keyframes snow_falling_fore {
+		0% {
+			top: -100%;
+			opacity: 0
+		}
+
+		1% {
+			top: -100%;
+			opacity: 1
+		}
+
+		99.8% {
+			top: 100%;
+			opacity: 1
+		}
+
+		99.9% {
+			opacity: 0
+		}
+
+		100% {
+			top: -100%;
+			opacity: 0
+		}
+	}
+	
+	@keyframes snow_falling_mid {
+		0% {
+			top: -100%;
+			opacity: 0
+		}
+
+		1% {
+			top: -100%;
+			opacity: 1
+		}
+
+		99.8% {
+			top: 100%;
+			opacity: 1
+		}
+
+		99.9% {
+			opacity: 0
+		}
+
+		100% {
+			top: -100%;
+			opacity: 0
+		}
+	}
+	
+	#core_layer {
+		top: 20%;
+		width: 100%;
+		left: 0;
+		z-index: 3;
+		position: absolute;
+	}
+	
+	.mid {
+		display: flex;
+		justify-content: center;
+		align-items: center;		
+	}
+	
+	.sbox {
+		padding: 10px 15px;
+		width:auto;
+	}
+	
+	#sb_form_q {
+		height: 44px;
+		width: 100%;
+		font-size: 18px;
+		background-color: rgba(255,255,255,.95);
+		border: 1px solid #fff;
+		transition: opacity 200ms;		
+		outline: none;
+		padding: 2px 70px 1px 7px;
+		z-index: 1;
+	}
+	
+	#sbBtn {
+		position: absolute;
+		right: 0;
+		top: 0;
+		height: 44px;
+		width: 44px;
+		background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFgAAABYCAYAAABxlTA0AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDowMzA4RjQ2RUE5OTdFMzExQTA2MENCN0E3NkQ5RDRBMyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDoyQTQ0MzUzMTM2OTUxMUU1ODFGM0UxQUFEQ0IxQTAyNyIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDoyQTQ0MzUzMDM2OTUxMUU1ODFGM0UxQUFEQ0IxQTAyNyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M2IChXaW5kb3dzKSI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkQwQUUyNjUxOTMzNkU1MTE5QjBEOTk1REFCOEI5NDhBIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjAzMDhGNDZFQTk5N0UzMTFBMDYwQ0I3QTc2RDlENEEzIi8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+Xnj3tQAABNVJREFUeNrsnGtoFFcUx/83WfNO87DRxJjER1CC1RiCL2x9UFEKCqUapPnQD1akEqgKbRFEv4j1m4KioiIiLT4QEUSqxfigokVq1FWbhDSkaEyqNt0kZpNokt3rvTNYcOcmZtfZ2cnM+cN8yJ3svTO/Offcc8+ZXcYvp3OQoqY4QhBdecA5WXA0xBgjCyYXQYBJBJgAE2ASASbABJhEgAkwiQATYAJMIsAEmACTCDABJhFgAkyASUPLM2KuNKkA+PAzIHM+Q+pU8Xe+uPoMINALDHQCPY1A113Ad42LA+D9trhsxqvTgrYGO3oJULSJIesTebnD+0zfv0DrMaB5H0dfW4zI6u9F2BdwSjEwdRdD9uLI+5CW3bSD48lBYdFBAvy/xlYAJXsZ4lPN6c93GXi4hqPfZzlg+y1yRRuBj46YB1cq+1Og/BJDYr7LffD4tcIt7B7c0fIA0H4d6LjB0dsEzb/Gp+gLYMYshtFL9YVvMPX8BdQstcYv285FZH0MlJ1nYPEKsCIieHIIeLSH41XrEEFnIpC7Gpi0RVjruMHdxb0veNR9sq0AS3cwr0Y9hV8+Bu5XcnR5w+gvDZh2mCFnufp8ww8czQdc5IMnfK+G+6IG+GNReHClAn79oTTvU5+ftJUhIcclO7lR2UDBN8Z26Qq8q7gW00YkLix1M8fTk4rtVTpQuIG5A3BeJZQRQ12VOYtR/Ubht1uM7eO+0n224wGPrTBa0n+XxFFtTv+Bbn2zYZg5WSJ8W+RwwPIm02ca21uOmvu1hqengP52RXy8mDkbcHqpWG1DLiHYq4dSZirYJ2bEr4rxyxxuwcmTFZHDHTGte8wfq/O2cVakTHa6i8hUx73RkKpfT6bDAcclMeV0joZU/To+ihjwG6dtQm50xvIoQsGBLocDVuUVkqKU8UqZMrzxHQW4u87YljYNSMwzfyxZagpVT4PTAdeKadoRmiUBclaYO07CGBHzLjS2t9/gzgYsU4ZtF43tBesZmIn12IIq0d8oY66i7YILtsr/nFDEp8VA0bfm9C8r0IVVxvaOW9CS9o4H7Luql9tDNXELQ+bc94wcPgCm/8SU4dijXZb8yoAN8sHiPhu3GW82LgEoPSMgz488zzHzLENqicJ6b6pdkzMBSyu+pvaH0gLLzjGtEBqOT5YPZdZ1hozZxnNyG16/gWsP1jWA5cslg6UOpSUXb2eYc4sh/2s9IlDvCkU/y4AZJxnKLzAkF6n/r+E7ju56y24t9jU5CXfGceEnk4cfefi90CAFXurZuKRCaNb6rlL/3zs5mn60iKwdip7hwn2fcLBxK8fjPdbdW8yLnkPBlX7SrEWo75leprcSbsx98Lvg3v+Sw1vBcfdzDv+DyMaQifvm/cDv5dz0BL6tffBw4PquvL11lp/Jq2TaIiYrwkOFfP4/gWenOVp/Ftb7PHZrS0x8cNhwQy9ahGpp08UhYtvEXJkwZwiKha6/k2uvRXXdiy3UmAKWL+CVnogc7kiTpYtc1gJ3wbV8kZMvUrsQrnWAZXbMhXCtA9z+myvhWge4dh1H2y/QVnxZJvKudAVce+QiHEuWfn3VwVtlAkwiwASYRIAJMAEmEWACTIBJBJgAE2ASASbAJAJMgAkwiQATYPfI86b6SSILHpF6LcAAf+eSaHyyMOoAAAAASUVORK5CYII=");
+		background-size: 100% 100%;
+		border: none;
+		z-index: 1;
+	}
+	
+	#bLogo {
+		height: 40px;
+		width: 98px;
+	}
+	
+	#present_layer {
+		visibility: visible;    
+		height: 56px;
+		width: 336px;
+		position: absolute;
+		top: 40%;
+		left: calc(50% - 168px);
+		transition: none;
+		opacity: 1;
+		max-width: 336px;
+		overflow: hidden;
+	}
+	
+	#present_layer ul {
+		width: 336px;
+		height: 56px;
+		display: flex;
+		flex-direction: row;
+		position: absolute;
+		top: 0;
+		left: 0;
+	}
+	
+	#present_layer ul li{
+		visibility: visible;
+		flex: 1;
+		cursor: pointer;
+		outline: none;
+		height: 56px;
+		width: 56px;
+	}	
+	
+	.advent_day {
+		background-image: url('images/default.png');
+		background-size: cover;
+		background-position: center;
+	}
+	
+	.advent_day.opened {
+		background-image: url('images/opened.png');
+	}	
+	
+</style>
+
+</head>
+
+<body>
+    <div id="content">
+		<script id="snow" type="domStr">
+		<div id="snow_ctnr" class="fader" style="opacity: 1;">
+			<div class="snow_dom_slice snow_fall snow_01">
+				<div class="snow_drifter drift_01"></div>
+			</div>
+			<div class="snow_dom_slice snow_fall snow_02">
+				<div class="snow_drifter drift_02"></div>
+			</div>
+			<div class="snow_dom_slice snow_fall snow_03">
+				<div class="snow_drifter drift_03"></div>
+			</div>
+			<div class="snow_dom_slice snow_fall snow_04">
+				<div class="snow_drifter drift_04"></div>
+			</div>
+		</div>
+		</script>
+		<div id="frost_ctnr" class="fader" style="opacity: 0;">
+			<div class="frost_sprite frame_left"></div>
+			<div class="frost_sprite frame_right"></div>
+			<div class="frost_sprite frame_top"></div>
+			<div class="frost_sprite frame_bottom"></div>
+		</div>
+		<div id="lights_ctnr" class="fader" style="opacity: 0;">
+			<div class="lights_sprite frame_left"></div>
+			<div class="lights_sprite frame_right"></div>
+			<div class="lights_sprite frame_top"></div>
+			<div class="lights_sprite frame_bottom"></div>
+		</div>
+		<div id="core_layer" style="opacity: 1;">
+			<div class="mid">
+				<img id="bLogo" class="bgLogo rms_img" alt="必应徽标" src="data:image/png;base64,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">
+			</div>
+			<div class="sbox">
+				<div style="width:auto; position: relative">
+					<input id="sb_form_q" name="q" type="search" autocapitalize="off" autocorrect="off" autocomplete="off" aria-label="搜索框" role="combobox" aria-autocomplete="both" aria-haspopup="true" aria-expanded="false" aria-controls="sw_as" aria-owns="sw_as">	
+					<input id="sbBtn" type="submit" value="" aria-label="搜索" alt="搜索">
+				</div>
+			</div>
+		</div>
+		<div id="present_layer" class="mid" style="opacity: 1;">
+			<ul>
+				<li class="mid advent_day opened" data="gift">
+					<img class="advent-icon" src="images/cal_open.png" >
+				</li>
+				<li class="mid advent_day" data="snow">
+					<img class="advent-icon" src="images/cal_snow.png" >
+				</li>
+				<li class="mid advent_day" data="light">
+					<img class="advent-icon" src="images/cal_lights.png" >
+				</li>
+				<li class="mid advent_day" data="ice">
+					<img class="advent-icon" src="images/cal_frost.png" >
+				</li>
+				<li class="mid advent_day" data="bell">
+					<img class="advent-icon" src="images/cal_jingle_bell.png">
+				</li>
+				<li class="mid advent_day" data="fire">
+					<img class="advent-icon" src="images/cal_yuleog.png" >
+				</li>
+			</ul>
+		</div>
+	</div>
+	<script>
+		var presentLayer = document.getElementById("present_layer");
+		var funcs = {
+			gift: gift,
+			snow: snow,
+			light: light,
+			ice: ice,
+			bell: bell,
+			fire: fire
+		};
+		presentLayer.addEventListener("click",itemClick);
+		function itemClick(e) {
+			var doms = e.path||getPath(e.target);
+			var dom;
+			//alert(e.target);
+			doms.forEach(function(node) {
+				if(node.nodeName == "LI") {
+					dom = node;
+				}
+			});
+
+			if(dom.getAttribute("class").indexOf("opened") > 0) {
+				dom.setAttribute("class", "mid advent_day");
+				funcs[dom.getAttribute("data")](false);
+			}else {
+				dom.setAttribute("class", "mid advent_day opened");
+				funcs[dom.getAttribute("data")](true);
+			}
+		}
+		
+		presentLayer.addEventListener("transitionend",function() {
+			presentLayer.style.transition = "none";
+		});
+		
+		function gift(isOpen) {
+			var presentLayer = document.getElementById("present_layer");
+			presentLayer.style.transition = "max-width 333ms ease-in-out";
+			if(isOpen) {
+				presentLayer.style.maxWidth="336px";
+			}else {
+				presentLayer.style.maxWidth="56px";
+			}
+		}
+		
+		function snow(isOpen) {
+			var snowCtnr = document.getElementById("snow_ctnr");
+			
+			if(isOpen) {
+				if(snowCtnr != null) {
+					snowCtnr.style.opacity = 1;
+				}else {
+					var snow = document.getElementById("snow");
+					var content = document.getElementById("content");
+					content.insertAdjacentHTML("afterbegin",snow.innerHTML);
+				}
+				
+			}else {
+				snowCtnr.style.opacity = 0;
+			}
+			snowCtnr
+		}
+		
+		function light(isOpen) {
+			var lightsCtnr = document.getElementById("lights_ctnr");
+			if(isOpen) {
+				lightsCtnr.style.opacity = 1;
+			}else {
+				lightsCtnr.style.opacity = 0;
+			}
+		}
+		
+		function ice(isOpen) {
+			var frostCtnr = document.getElementById("frost_ctnr");
+			if(isOpen) {
+				frostCtnr.style.opacity = 1;
+			}else {
+				frostCtnr.style.opacity = 0;
+			}
+		}
+		
+		function bell() {
+		
+		}
+		
+		function fire() {
+		
+		}
+		//只有chrome的event有path属性，其余没有的用此函数获取。
+		function getPath(dom) {
+			var path = [];
+			while (dom) {
+				path.push(dom);
+				dom = dom.parentElement;
+			}
+			if (path.indexOf(window) === -1 && path.indexOf(document) === -1)
+				path.push(document);
+			if (path.indexOf(window) === -1)
+				path.push(window);
+			return path;
+		}
+	</script>
+</body>
+</html>
